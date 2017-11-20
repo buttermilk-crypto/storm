@@ -33,6 +33,25 @@ public class AccountManager {
 		this.accountFile = accountFile;
 		mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		if(!accountFile.exists()) {
+			initialize();
+		}
+	}
+	
+	private void initialize() {
+		if(list == null) {
+			list = new ArrayList<LinkedHashMap<String,String>>();
+		}
+		LinkedHashMap<String,String> m = new LinkedHashMap<String,String>();
+		m.put("account", "dummy account name (update me)");
+		m.put("accessToken", "access token goes here");
+		m.put("accessTokenSecret", "access token secret goes here");
+		m.put("consumerKey", "consumer key value goes here");
+		m.put("consumerSecret", "consumer secret goes here");
+		
+		list.add(m);
+		this.save();
+		
 	}
 	
 	@SuppressWarnings("unchecked")

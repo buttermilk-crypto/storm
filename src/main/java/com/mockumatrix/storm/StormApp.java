@@ -6,10 +6,12 @@ package com.mockumatrix.storm;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -18,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -62,6 +65,9 @@ public class StormApp {
 
 	AccountManager accountManager;
 	PropertiesManager propsManager;
+	
+	// used to hold reference for disposal when program closes
+	final List<Image> imageList = new ArrayList<Image>();
 
 	public StormApp() {
 		super();
@@ -152,6 +158,9 @@ public class StormApp {
 	 * Closes the main program.
 	 */
 	void close() {
+		for(Image img: imageList) {
+			img.dispose();
+		}
 		// save props - note that app gui already destroyed by this point
 		propsManager.save();
 	}
@@ -222,17 +231,43 @@ public class StormApp {
 			}
 		});
 
-		/*
-		 * Button button1 = new Button(accountsGroup, SWT.PUSH); button1.setText("+/-");
-		 * button1.addSelectionListener(new SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) { MessageBox dialog =
-		 * new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK); dialog.setText("FYI");
-		 * dialog.setMessage("For the moment, this is done manually."); // open dialog
-		 * and await user selection
-		 * 
-		 * @SuppressWarnings("unused") int returnCode = dialog.open(); } });
-		 */
+		
+		  Button button1 = new Button(accountsGroup, SWT.PUSH); 
+		  InputStream in = this.getClass().getResourceAsStream("/com/mockumatrix/storm/add.png");
+		  Image add = new Image(display, in);
+		  imageList.add(add);
+		  button1.setImage(add);
+		  button1.addSelectionListener(new SelectionAdapter() {
+			  @Override public void widgetSelected(SelectionEvent e) { 
+			 
+		  
+			  }
+		  });
+		  
+		  Button button2 = new Button(accountsGroup, SWT.PUSH); 
+		  in = this.getClass().getResourceAsStream("/com/mockumatrix/storm/delete.png");
+		  Image del = new Image(display, in);
+		  button2.setImage(del);
+		  imageList.add(del);
+		  button2.addSelectionListener(new SelectionAdapter() {
+			  @Override public void widgetSelected(SelectionEvent e) { 
+			 
+		  
+			  }
+		  });
+		  
+		  Button button3 = new Button(accountsGroup, SWT.PUSH); 
+		  in = this.getClass().getResourceAsStream("/com/mockumatrix/storm/edit.png");
+		  Image edit = new Image(display, in);
+		  button3.setImage(edit);
+		  imageList.add(edit);
+		  button3.addSelectionListener(new SelectionAdapter() {
+			  @Override public void widgetSelected(SelectionEvent e) { 
+			 
+		  
+			  }
+		  });
+		 
 
 	}
 

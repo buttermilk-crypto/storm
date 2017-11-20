@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Test;
 
+@SuppressWarnings("unused")
 public class AccountManagerTest {
 /*
 	@Test
