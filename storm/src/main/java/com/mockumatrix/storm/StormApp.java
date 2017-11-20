@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
