@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class AccountManagerTest {
-
+/*
 	@Test
 	public void test0() {
 		File flatfile = new File("./src/test/resources/storm-test-data.json");
@@ -31,6 +31,7 @@ public class AccountManagerTest {
 
 	}
 
+
 	@Test
 	public void test2() {
 		Display display = new Display();
@@ -50,4 +51,5 @@ public class AccountManagerTest {
 		}
 		display.dispose();
 	}
+*/
 }
