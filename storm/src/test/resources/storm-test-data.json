@@ -1,0 +1,16 @@
+[
+ { 
+   "account" : "testaccount0",
+   "consumerKey" : "xxx",
+   "consumerSecret" : "zzz",
+   "accessToken" : "aaa",
+   "accessTokenSecret" : "bbb"
+ },
+ { 
+   "account" : "testaccount1",
+   "consumerKey" : "xdfgg",
+   "consumerSecret" : "ygjfdh",
+   "accessToken" : "jlkoui",
+   "accessTokenSecret" : "zzz"
+ }
+]
