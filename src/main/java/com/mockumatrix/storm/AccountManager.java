@@ -54,6 +54,28 @@ public class AccountManager {
 		
 	}
 	
+	public void add(LinkedHashMap<String,String> item) {
+		list.add(item);
+		save();
+		this.selectedAccount = item;
+	}
+	
+	public void delete(String accountName) {
+		int index = 0;
+		for(LinkedHashMap<String,String> hm : list) {
+			String val = hm.get("account");
+			val = val.toLowerCase();
+			if(accountName.toLowerCase().equals(val)) {
+				
+				break;
+			}
+			index++;
+		}
+		
+		list.remove(index);
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void load() {
 		

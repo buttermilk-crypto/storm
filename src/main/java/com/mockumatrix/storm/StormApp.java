@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -239,7 +240,26 @@ public class StormApp {
 		  button1.setImage(add);
 		  button1.addSelectionListener(new SelectionAdapter() {
 			  @Override public void widgetSelected(SelectionEvent e) { 
-			 
+				  AccountEditorDialog dlg = new AccountEditorDialog(shell);
+					LinkedHashMap<String, String> input = dlg.open();
+					if (input != null) {
+						if(input.size() > 0) {
+							accountManager.add(input);
+							accountManager.save();
+							String[] listData = accountManager.accounts();
+							combo1.setItems(listData);
+							propsManager.getProperties().put("account.selected", input.get("account")); 
+							String acctSelPrev = propsManager.getProperties().get("account.selected", "");
+							if(!acctSelPrev.equals("")) {
+								int count = combo1.getItemCount();
+								for(int i = 0; i<count;i++) {
+									if(acctSelPrev.equals(combo1.getItem(i))) {
+										combo1.select(i);
+									}
+								}
+							}
+						}
+					}
 		  
 			  }
 		  });
@@ -251,8 +271,11 @@ public class StormApp {
 		  imageList.add(del);
 		  button2.addSelectionListener(new SelectionAdapter() {
 			  @Override public void widgetSelected(SelectionEvent e) { 
-			 
-		  
+				  String selected = combo1.getText();
+				  accountManager.delete(selected);
+				  propsManager.getProperties().deleteKey("account.selected");
+				  String[] listData = accountManager.accounts();
+				  combo1.setItems(listData);
 			  }
 		  });
 		  
@@ -263,8 +286,25 @@ public class StormApp {
 		  imageList.add(edit);
 		  button3.addSelectionListener(new SelectionAdapter() {
 			  @Override public void widgetSelected(SelectionEvent e) { 
-			 
-		  
+				 String selected = combo1.getText();
+				 accountManager.find(selected);
+				 AccountEditorDialog dlg = new AccountEditorDialog(shell,  accountManager.getSelectedAccount());
+			     LinkedHashMap<String, String> input = dlg.open();
+				 if (input != null) {
+						accountManager.save();
+						String[] listData = accountManager.accounts();
+						combo1.setItems(listData);
+						propsManager.getProperties().put("account.selected", input.get("account")); 
+						String acctSelPrev = propsManager.getProperties().get("account.selected", "");
+						if(!acctSelPrev.equals("")) {
+							int count = combo1.getItemCount();
+							for(int i = 0; i<count;i++) {
+								if(acctSelPrev.equals(combo1.getItem(i))) {
+									combo1.select(i);
+								}
+							}
+						}
+				 }
 			  }
 		  });
 		 

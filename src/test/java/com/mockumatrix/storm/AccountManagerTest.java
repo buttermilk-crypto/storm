@@ -35,7 +35,8 @@ public class AccountManagerTest {
 		Assert.assertNotNull(accounts.length == 2);
 
 	}
-
+*/
+	
 
 	@Test
 	public void test2() {
@@ -55,6 +56,8 @@ public class AccountManagerTest {
 			}
 		}
 		display.dispose();
+		shell.close();
+		
 	}
-*/
+
 }
