@@ -13,7 +13,7 @@ public class StormEntry {
 	String tweetText;
 	List<String> attachmentPaths;
 	
-	public StormEntry(Integer tweetId, String tweetText, List<String> paths){
+	public StormEntry(Long tweetId, String tweetText, List<String> paths){
 		this.tweetId = Long.parseLong(tweetId.toString());
 		this.tweetText = tweetText;
 		this.attachmentPaths = paths;

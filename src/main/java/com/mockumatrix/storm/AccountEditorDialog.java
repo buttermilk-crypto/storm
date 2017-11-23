@@ -16,6 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -25,17 +26,19 @@ public class AccountEditorDialog extends Dialog {
 	private List<Text> textControlList = new ArrayList<Text>();
 
 	private LinkedHashMap<String, String> map;
+	
+	private Group accountGroup, buttonGroup;
 
-	Display display;
+	//Display display;
 
 	public AccountEditorDialog(Shell parent) {
 		this(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		this.display = parent.getDisplay();
+		//this.display = parent.getDisplay();
 	}
 	
 	public AccountEditorDialog(Shell parent, LinkedHashMap<String, String> map) {
 		this(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		this.display = parent.getDisplay();
+		//this.display = parent.getDisplay();
 		this.map = map;
 	}
 
@@ -50,6 +53,7 @@ public class AccountEditorDialog extends Dialog {
 		}
 		Shell shell = new Shell(getParent(), getStyle());
 		shell.setText(getText());
+		shell.setLayout(new GridLayout(1, false));
 		createContents(shell);
 		shell.pack();
 		shell.open();
@@ -62,24 +66,30 @@ public class AccountEditorDialog extends Dialog {
 		return map;
 	}
 	
-	private void createRow(Shell shell, String name) {
+	private void createRow(Group group, String name) {
 		
-		Label label = new Label(shell, SWT.NONE);
+		Label label = new Label(group, SWT.NONE);
 		label.setText(name);
-		Text text = new Text(shell, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 3, 1));
+		Text text = new Text(group, SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 4, 1));
 		textControlList.add(text);
 	}
 
 	private void createContents(final Shell shell) {
+		
+		accountGroup = new Group(shell, SWT.NONE);
+		GridData gd0 = new GridData();
+		gd0.grabExcessHorizontalSpace = true;
+		accountGroup.setLayoutData(gd0);
+		accountGroup.setText("Account OAuth Data (From Twitter)");
 
-		shell.setLayout(new GridLayout(4, true));
+		accountGroup.setLayout(new GridLayout(5, true));
 
-		createRow(shell, "Account");
-		createRow(shell, "AccessToken");
-		createRow(shell, "AccessTokenSecret");
-		createRow(shell, "ConsumerKey");
-		createRow(shell, "ConsumerSecret");
+		createRow(accountGroup, "Account");
+		createRow(accountGroup, "AccessToken");
+		createRow(accountGroup, "AccessTokenSecret");
+		createRow(accountGroup, "ConsumerKey");
+		createRow(accountGroup, "ConsumerSecret");
 		
 		if(map.size() > 0) {
 			textControlList.get(0).setText(map.get("account"));
@@ -89,14 +99,43 @@ public class AccountEditorDialog extends Dialog {
 			textControlList.get(4).setText(map.get("consumerSecret"));
 		}
 		
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		
+		buttonGroup = new Group(shell, SWT.NONE);
+		gd0 = new GridData();
+		gd0.grabExcessHorizontalSpace = true;
+		gd0.horizontalSpan = 2;
+		gd0.horizontalAlignment = GridData.FILL;
+		buttonGroup.setLayoutData(gd0);
+		buttonGroup.setText("");
+		buttonGroup.setLayout(new GridLayout(6, true));
+		
+		Button test = new Button(buttonGroup, SWT.PUSH);
+		test.setText("Test");
+		test.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, true, 1, 1));
+		test.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				
+			}
+		});
+		
+		
+		new Label(buttonGroup, SWT.NONE);
+		new Label(buttonGroup, SWT.NONE);
+		new Label(buttonGroup, SWT.NONE);
 	
+		Button cancel = new Button(buttonGroup, SWT.PUSH);
+		cancel.setText("Cancel");
+		cancel.setLayoutData(new GridData(SWT.FILL, SWT.RIGHT, true, true, 1, 1));
+		cancel.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				map = null;
+				shell.close();
+			}
+		});
 
-		Button ok = new Button(shell, SWT.PUSH);
+		Button ok = new Button(buttonGroup, SWT.PUSH);
 		ok.setText("OK");
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		ok.setLayoutData(data);
+		ok.setLayoutData(new GridData(SWT.FILL, SWT.RIGHT, true, true, 1, 1));
 		ok.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				String account = textControlList.get(0).getText();
@@ -113,17 +152,7 @@ public class AccountEditorDialog extends Dialog {
 			}
 		});
 
-		Button cancel = new Button(shell, SWT.PUSH);
-		cancel.setText("Cancel");
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		cancel.setLayoutData(data);
-		cancel.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				map = null;
-				shell.close();
-			}
-		});
-
+		
 		shell.setDefaultButton(ok);
 	}
 }

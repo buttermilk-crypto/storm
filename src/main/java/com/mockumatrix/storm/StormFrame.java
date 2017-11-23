@@ -74,7 +74,7 @@ public class StormFrame {
 	}
 	
 	private void addEntry(LinkedHashMap<String,?> lhm){
-		Integer tweetId = (Integer) lhm.get("tweetId");
+		Long tweetId = Long.parseLong(String.valueOf(lhm.get("tweetId")));
 		String tweetText = (String) lhm.get("tweetText");
 		@SuppressWarnings("unchecked")
 		ArrayList<String> attachments = (ArrayList<String>) lhm.get("attachmentPaths");

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.swt.widgets.Text;
+
 import com.twitter.Validator;
 import com.vdurmont.emoji.EmojiParser;
 
@@ -24,7 +26,7 @@ import com.vdurmont.emoji.EmojiParser;
  */
 public class TextUtil {
 
-	public static final ArrayList<StormEntry> prepareStormText(File infile) {
+	public static final ArrayList<StormEntry> prepareStormText(File infile, final Text out) {
 
 		ArrayList<String> list = new ArrayList<String>();
 		ArrayList<StormEntry> collect = new ArrayList<StormEntry>();
@@ -50,7 +52,9 @@ public class TextUtil {
 				}
 			}
 			
-			System.err.println("Found "+list.size()+" tweets.");
+			if(buf.length() > 0) list.add(buf.toString());
+			
+			out.append("Found "+list.size()+" tweets.\n");
 
 			// convert emojicodes into UTF-8 and parse attachments
 			ArrayList<StormEntry> tmp = new ArrayList<StormEntry>();
@@ -77,18 +81,18 @@ public class TextUtil {
 
 				Validator v = new Validator();
 				if (v.isValidTweet(numbered)) {
-					System.err.println("is valid: " + numbered);
+					out.append("is valid: " + numbered+"\n");
 				} else {
-					System.err.println("is NOT valid: ["
-							+ v.getTweetLength(numbered) + "] " + numbered);
-					throw new RuntimeException("Failed, bailing out!");
+					out.append("is NOT valid: ["
+							+ v.getTweetLength(numbered) + "] " + numbered+"\n");
+					
 				}
 				
 				if(entry.attachmentPaths.size()>0) {
 					String p = entry.attachmentPaths.get(0);
 					File newFile = new File(parent,p);
 					if(!newFile.exists()){
-						throw new RuntimeException("File not found: "+p+". Failed, bailing out!");
+						out.append("File not found: "+p+". This must be fixed!\n");
 					}else{
 						entry.attachmentPaths.set(0, newFile.getCanonicalPath());
 					}
@@ -100,7 +104,7 @@ public class TextUtil {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(2); // errors in text should kill us before sending
+			return null; // errors in text should kill us before sending
 							// anything
 		}
 

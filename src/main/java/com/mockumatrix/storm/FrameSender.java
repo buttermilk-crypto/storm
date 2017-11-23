@@ -6,6 +6,9 @@ package com.mockumatrix.storm;
 
 import java.io.File;
 
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
+
 import twitter4j.RateLimitStatus;
 import twitter4j.RateLimitStatusEvent;
 import twitter4j.RateLimitStatusListener;
@@ -23,26 +26,32 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author Dave
  *
  */
-public class FrameSender {
+public class FrameSender implements Runnable {
 
+	Display display;
 	StormFrame frame;
 	AccountManager accountManager;
 	PropertiesManager propsManager;
+	Text outputText;
 
 	Twitter twitter;
+	
+	boolean kill;
 
-	public FrameSender(StormFrame frame, AccountManager accountManager, PropertiesManager propsManager) {
+	public FrameSender(Display display, StormFrame frame, AccountManager accountManager, PropertiesManager propsManager, Text outputText) {
 		super();
+		this.display = display;
 		this.frame = frame;
 		this.propsManager = propsManager;
 		this.accountManager = accountManager;
+		this.outputText = outputText;
 	}
 
 	public FrameSender configure() {
-
+		kill = false;
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setJSONStoreEnabled(true);
-
+		
 		// data present in storm.json file
 		cb.setOAuthAccessToken(accountManager.getSelectedAccount().get("accessToken"));
 		cb.setOAuthAccessTokenSecret(accountManager.getSelectedAccount().get("accessTokenSecret"));
@@ -79,14 +88,37 @@ public class FrameSender {
 		return this;
 
 	}
+	
+	private void msg(String msg) {
+		
+		display.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (outputText == null || outputText.isDisposed ())
+                    return;
+                outputText.append(msg+"\n");
+            }
+        });
+	}
 
-	public void send() {
-		if (frame.entries.get(0).tweetId == 0) {
-			// does not appear to have been sent at all, assume new.
-			sendAsNew();
-		} else {
-			sendAsPartial();
+	public void run() {
+		try {	
+			if (frame.entries.get(0).tweetId == 0) {
+				// frame does not appear to have been sent at all, assume new.
+				sendAsNew();
+			} else {
+				sendAsPartial();
+			}
+		}catch(Exception x) {
+			x.printStackTrace();
 		}
+		
+		msg("Thread complete.");
+		
+	}
+	
+	public void stop() {
+		kill = true;
 	}
 
 	public void sendAsPartial() {
@@ -99,9 +131,12 @@ public class FrameSender {
 			// TO DO, check if the existing ids are valid ?
 			boolean sentAnything = false;
 			for(int i = 1; i<frame.entries.size(); i++){
+				
+				if(kill) return;
+				
 				StormEntry s = frame.entries.get(i);
 				
-				if(s.tweetId != 0){
+				if(s.tweetId == 0){
 					
 				    StatusUpdate update = new StatusUpdate(s.tweetText);
 				 // send multiple media files first, and correlate ids. 
@@ -109,6 +144,8 @@ public class FrameSender {
 					if (s.attachmentPaths.size() > 0) {
 						 mediaIds = new long[s.attachmentPaths.size()];
 				         for(int j=0; j<s.attachmentPaths.size(); j++) {
+				        	 if(kill) return;
+				        	msg("Uploading media: "+s.attachmentPaths.get(j));
 				            UploadedMedia media = twitter.uploadMedia(new File(s.attachmentPaths.get(j)));
 				            mediaIds[j] = media.getMediaId();
 				         }
@@ -119,25 +156,29 @@ public class FrameSender {
 				    update.setInReplyToStatusId(topLevelId);
 				    
 				    Status status = twitter.updateStatus(update);
-				    System.out.println("sent update: "+status.getId()+" "+s);
-				    
+				    msg("sent update: id="+status.getId()+" "+s.getTweetText());
 				    s.tweetId = status.getId();
 				    frame.save();
 				    sentAnything = true;
 				    try {
+				       if(kill) return;
+ 				       msg("Sleeping now for 60 seconds...");
 					   Thread.sleep(60*1000);
 				    } catch (InterruptedException e) {
 					    e.printStackTrace();
 				    }
+				}else {
+					msg("Skipping "+s.tweetId+", "+s.tweetText);
 				}
 			   }
 			
 			if(!sentAnything) {
-				System.out.println("Did not update any entries...");
+			    msg("Did not update any entries...");
+			}else {
+				msg("Done!");
 			}
 			
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -156,6 +197,8 @@ public class FrameSender {
 			if (top.attachmentPaths.size() > 0) {
 				 mediaIds = new long[top.attachmentPaths.size()];
 		         for(int i=0; i<top.attachmentPaths.size(); i++) {
+		        	 if(kill) return;
+		        	msg("Uploading media: "+top.attachmentPaths.get(i));
 		            UploadedMedia media = twitter.uploadMedia(new File(top.attachmentPaths.get(i)));
 		            mediaIds[i] = media.getMediaId();
 		         }
@@ -166,12 +209,14 @@ public class FrameSender {
 			Status status = twitter.updateStatus(update);
 
 			long id = status.getId();
-			System.out.println("established top level " + id + " " + top);
+			msg("established top level " + id + " " + top.getTweetText());
 			top.setTweetId(id);
 			frame.save();
 
 			// now send our tweet storm as replies one per minute
 			for (int i = 1; i < frame.entries.size(); i++) {
+				
+				if(kill) return;
 				
 				StormEntry s = frame.entries.get(i);
 				update = new StatusUpdate(s.tweetText);
@@ -180,6 +225,8 @@ public class FrameSender {
 				if (s.attachmentPaths.size() > 0) {
 					 mediaIds = new long[s.attachmentPaths.size()];
 			         for(int j=0; j<s.attachmentPaths.size(); j++) {
+			        	 if(kill) return;
+			        	msg("Uploading media: "+s.attachmentPaths.get(j));
 			            UploadedMedia media = twitter.uploadMedia(new File(s.attachmentPaths.get(j)));
 			            mediaIds[j] = media.getMediaId();
 			         }
@@ -189,10 +236,12 @@ public class FrameSender {
 
 				update.setInReplyToStatusId(id);
 				status = twitter.updateStatus(update);
-				System.out.println("sent update: " + status.getId() + " " + s);
+				msg("sent update: " + status.getId() + " " + s);
 				s.tweetId = status.getId();
 				frame.save();
 				try {
+					if(kill) return;
+					msg("Sleeping now for 60 seconds...");
 					Thread.sleep(60 * 1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -200,11 +249,10 @@ public class FrameSender {
 			}
 
 		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		System.out.println("Done!");
+		 msg("Done!");
 	}
 
 }

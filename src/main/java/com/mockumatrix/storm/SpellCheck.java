@@ -61,6 +61,10 @@ public class SpellCheck implements Runnable {
 				if(Character.isUpperCase(ch)) {
 					continue;
 				}
+				// emoji
+				if(ch == ':') {
+					continue;
+				}
 				validationOutputText.append(match.getMessage()+": "+input.substring(match.getFromPos(), match.getToPos()) +"\n");
 				List<String> replace = match.getSuggestedReplacements();
 				if(replace.size()>0) validationOutputText.append(replace.toString()+"\n");
