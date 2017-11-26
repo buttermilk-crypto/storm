@@ -37,7 +37,7 @@ public class AccountManagerTest {
 	}
 */
 	
-
+/*
 	@Test
 	public void test2() {
 		Display display = new Display();
@@ -59,5 +59,6 @@ public class AccountManagerTest {
 		shell.close();
 		
 	}
+	*/
 
 }
