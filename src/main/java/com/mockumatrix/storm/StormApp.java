@@ -455,7 +455,7 @@ public class StormApp {
 		buttonGroup.setLayout(new GridLayout(6, true));
 		new Label(buttonGroup, SWT.NONE);
 		new Label(buttonGroup, SWT.NONE);
-		new Label(buttonGroup, SWT.NONE);
+	//	new Label(buttonGroup, SWT.NONE);
 		// new Label(buttonGroup, SWT.NONE);
 
 		Button button0 = new Button(buttonGroup, SWT.PUSH);
@@ -543,7 +543,8 @@ public class StormApp {
 
 						// no existing frame
 						// validate - this will cause program to exit if anything is invalid
-						ArrayList<StormEntry> entries = TextUtil.prepareStormText(inputFile, outputText);
+						String format = numberSchemeCombo.getText();
+						ArrayList<StormEntry> entries = TextUtil.prepareStormText(inputFile, outputText, format);
 						frame = new StormFrame(inputFile, entries);
 						// not saving yet
 					}
@@ -567,8 +568,9 @@ public class StormApp {
 								try {
 									if(sender != null) {
 									  sender.stop();
+									  senderThread.interrupt();
 									  senderThread = null;
-									  outputText.append("The sending thread has been sent stop notice.\n");
+								//	  outputText.append("The sending thread was alive has been sent stop notice.\n");
 									}
 								}catch(Exception x) {
 									x.printStackTrace();
@@ -577,6 +579,8 @@ public class StormApp {
 								
 							}
 						}else {
+						//	 outputText.append("The sending thread was not alive has been sent stop notice.\n");
+							senderThread.interrupt();
 							senderThread = null;
 						}
 					}
@@ -594,9 +598,10 @@ public class StormApp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(sender != null) {
-					if(senderThread.isAlive()) {
-					  sender.stop();
-					  outputText.append("The sending thread has been sent stop notice.\n");
+					 sender.stop();
+					if(senderThread != null && senderThread.isAlive()) {
+					  senderThread.interrupt();
+					//  outputText.append("The sending thread has been sent stop notice.\n");
 					}
 				}else {
 					outputText.append("Nothing to do.\n");
@@ -610,7 +615,7 @@ public class StormApp {
 
 		// runs validation, will fail as side effect if required
 		this.outputText.setText("");
-		ArrayList<StormEntry> list = TextUtil.prepareStormText(inputFile, this.outputText);
+		ArrayList<StormEntry> list = TextUtil.prepareStormText(inputFile, this.outputText, numberSchemeCombo.getText());
 
 		if (list.size() == 0) {
 			outputText.setText("The input text contained no strings, bailing out");

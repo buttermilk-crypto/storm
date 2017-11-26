@@ -6,12 +6,20 @@ package com.mockumatrix.storm;
 
 public enum NumberingScheme {
 	
-	DEFAULT("1-x, /end"), PLAIN("None");
+	DEFAULT("1-x, /end"), LIST("1.-x, /end"), ENDSLASH("1/ x/x"), PLAIN("None");
 	
 	final String description;
 	
 	NumberingScheme(String desc){
 		description = desc;
+	}
+	
+	public static NumberingScheme find(String val) {
+		for(NumberingScheme n: values()) {
+			String token = n.name()+" "+n.description;
+			if(token.equals(val)) return n;
+		}
+		throw new RuntimeException("Cound not find: "+val);
 	}
 	
 	public static String [] titles() {

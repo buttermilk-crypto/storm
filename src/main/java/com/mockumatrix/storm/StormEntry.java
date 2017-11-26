@@ -10,7 +10,7 @@ import java.util.List;
 public class StormEntry {
 
 	long tweetId = 0;
-	String tweetText;
+	public String tweetText;
 	List<String> attachmentPaths;
 	
 	public StormEntry(Long tweetId, String tweetText, List<String> paths){

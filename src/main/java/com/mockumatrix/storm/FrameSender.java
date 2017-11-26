@@ -66,21 +66,18 @@ public class FrameSender implements Runnable {
 			@Override
 			public void onRateLimitStatus(RateLimitStatusEvent event) {
 				RateLimitStatus stat = event.getRateLimitStatus();
-				System.err.println("Limit:" + stat.getRemaining() + "/"
-						+ stat.getLimit());
+				msg("Limit:" + stat.getRemaining() + "/" + stat.getLimit());
 			}
 
 			@Override
 			public void onRateLimitReached(RateLimitStatusEvent event) {
 				RateLimitStatus stat = event.getRateLimitStatus();
 				int secReset = stat.getSecondsUntilReset();
-				System.err.println("Hit limit, sleeping for " + secReset
-						+ " seconds...");
+				msg("Hit rate limit, sleeping for " + secReset + " seconds. Click stop if you want.");
 				try {
 					Thread.sleep((secReset * 1000) + 5000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-					System.exit(1);
+				//	e.printStackTrace();
 				}
 			}
 		});
@@ -165,7 +162,7 @@ public class FrameSender implements Runnable {
  				       msg("Sleeping now for 60 seconds...");
 					   Thread.sleep(60*1000);
 				    } catch (InterruptedException e) {
-					    e.printStackTrace();
+					 //   e.printStackTrace();
 				    }
 				}else {
 					msg("Skipping "+s.tweetId+", "+s.tweetText);
@@ -244,7 +241,7 @@ public class FrameSender implements Runnable {
 					msg("Sleeping now for 60 seconds...");
 					Thread.sleep(60 * 1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+				//	e.printStackTrace();
 				}
 			}
 

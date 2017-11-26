@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Text;
 
+import com.mockumatrix.storm.formatter.EndSlashStormFormatter;
+import com.mockumatrix.storm.formatter.PlainStormFormatter;
+import com.mockumatrix.storm.formatter.StormFormatter;
 import com.twitter.Validator;
 import com.vdurmont.emoji.EmojiParser;
 
@@ -26,7 +29,7 @@ import com.vdurmont.emoji.EmojiParser;
  */
 public class TextUtil {
 
-	public static final ArrayList<StormEntry> prepareStormText(File infile, final Text out) {
+	public static final ArrayList<StormEntry> prepareStormText(File infile, final Text out, final String formatterKey) {
 
 		ArrayList<String> list = new ArrayList<String>();
 		ArrayList<StormEntry> collect = new ArrayList<StormEntry>();
@@ -63,28 +66,26 @@ public class TextUtil {
 				tmp.add( removeAttachments(res) );
 			}
 
+			NumberingScheme scheme = NumberingScheme.find(formatterKey);
 			
 			// format with twitter "thread" semantics
 			int count = 0;
 			for (StormEntry entry : tmp) {
-
-				String numbered = "";
-				if (count == 0)
-					numbered = entry.tweetText + " [Thread]";
-				else if (count == list.size() - 1) {
-					numbered = count + " " + entry.tweetText + " /end";
-				} else {
-					numbered = count + " " + entry.tweetText;
+				
+				switch(scheme) {
+					case DEFAULT: entry.tweetText = new StormFormatter(entry,count,tmp.size()).format(); break;
+					case LIST: entry.tweetText = new StormFormatter(entry,count,tmp.size(), true).format(); break;
+					case ENDSLASH: entry.tweetText = new EndSlashStormFormatter(entry,count,tmp.size()).format(); break;
+					case PLAIN: entry.tweetText = new PlainStormFormatter(entry,count,tmp.size()).format(); break;
+					default: entry.tweetText = new StormFormatter(entry,count,tmp.size()).format(); break;
 				}
 				
-				entry.tweetText = numbered;
-
 				Validator v = new Validator();
-				if (v.isValidTweet(numbered)) {
-					out.append("is valid: " + numbered+"\n");
+				if (v.isValidTweet(entry.tweetText)) {
+					out.append("is valid: " + entry.tweetText+"\n");
 				} else {
 					out.append("is NOT valid: ["
-							+ v.getTweetLength(numbered) + "] " + numbered+"\n");
+							+ v.getTweetLength(entry.tweetText) + "] " + entry.tweetText+"\n");
 					
 				}
 				
