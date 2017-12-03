@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Text;
 
+import com.mockumatrix.storm.formatter.AbramsonStormFormatter;
 import com.mockumatrix.storm.formatter.EndSlashStormFormatter;
 import com.mockumatrix.storm.formatter.PlainStormFormatter;
 import com.mockumatrix.storm.formatter.StormFormatter;
@@ -77,6 +78,7 @@ public class TextUtil {
 					case LIST: entry.tweetText = new StormFormatter(entry,count,tmp.size(), true).format(); break;
 					case ENDSLASH: entry.tweetText = new EndSlashStormFormatter(entry,count,tmp.size()).format(); break;
 					case PLAIN: entry.tweetText = new PlainStormFormatter(entry,count,tmp.size()).format(); break;
+					case Abramson: entry.tweetText = new AbramsonStormFormatter(entry,count,tmp.size()).format(); break;
 					default: entry.tweetText = new StormFormatter(entry,count,tmp.size()).format(); break;
 				}
 				
@@ -130,7 +132,7 @@ public class TextUtil {
 
 		while (m.find()) {
 			String val = m.group(1);
-		//	System.err.println(val);
+			if(val != null && val.toLowerCase().contains("thread")) continue; // handle the case with [THREAD]
 			if (val != null) {
 				m.appendReplacement(sb, "");
 				s.attachmentPaths.add(val);

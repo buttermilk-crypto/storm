@@ -6,7 +6,7 @@ package com.mockumatrix.storm;
 
 public enum NumberingScheme {
 	
-	DEFAULT("1-x, /end"), LIST("1.-x, /end"), ENDSLASH("1/ x/x"), PLAIN("None");
+	DEFAULT("x, /end"), LIST("x., /end"), ENDSLASH("x/, x/x"), Abramson("x/, /end"), PLAIN("None");
 	
 	final String description;
 	

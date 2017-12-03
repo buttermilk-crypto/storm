@@ -61,7 +61,7 @@ public class StormApp {
 	FileDialog fileDialog;
 	Text inputFileText;
 	Text outputText;
-	Button spellCheckButton;
+	Button pinToProfileButton;
 
 	AccountManager accountManager;
 	PropertiesManager propsManager;
@@ -367,23 +367,23 @@ public class StormApp {
 		settingsGroup.setText("Misc. Settings");
 		settingsGroup.setLayout(new GridLayout(8, false));
 
-		spellCheckButton = new Button(settingsGroup, SWT.CHECK);
+		pinToProfileButton = new Button(settingsGroup, SWT.CHECK);
 
-		spellCheckButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-		spellCheckButton.setText("Check Spelling");
+		pinToProfileButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		pinToProfileButton.setText("Pin to Profile");
 
-		String check = propsManager.getProperties().get("check.spelling.selected", "");
+		String check = propsManager.getProperties().get("pin.to.profile.selected", "");
 		if (Boolean.valueOf(check).booleanValue()) {
-			spellCheckButton.setSelection(true);
+			pinToProfileButton.setSelection(true);
 		} else {
-			spellCheckButton.setSelection(false);
+			pinToProfileButton.setSelection(false);
 		}
 
-		spellCheckButton.addSelectionListener(new SelectionAdapter() {
+		pinToProfileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				propsManager.getProperties().put("check.spelling.selected",
-						String.valueOf(spellCheckButton.getSelection()));
+				propsManager.getProperties().put("pin.to.profile.selected",
+						String.valueOf(pinToProfileButton.getSelection()));
 			}
 		});
 
@@ -553,6 +553,7 @@ public class StormApp {
 					
 					if(senderThread == null) {
 						sender = new FrameSender(display, frame, accountManager, propsManager, outputText);
+						sender.setPinToProfile(pinToProfileButton.getSelection());
 						sender.configure();
 						senderThread = new Thread(sender);
 						senderThread.start();

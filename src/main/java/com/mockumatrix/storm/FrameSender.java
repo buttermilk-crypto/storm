@@ -33,6 +33,7 @@ public class FrameSender implements Runnable {
 	AccountManager accountManager;
 	PropertiesManager propsManager;
 	Text outputText;
+	boolean pinToProfile;
 
 	Twitter twitter;
 	
@@ -244,12 +245,21 @@ public class FrameSender implements Runnable {
 				//	e.printStackTrace();
 				}
 			}
+				
 
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
 
 		 msg("Done!");
+	}
+
+	public boolean isPinToProfile() {
+		return pinToProfile;
+	}
+
+	public void setPinToProfile(boolean pinToProfile) {
+		this.pinToProfile = pinToProfile;
 	}
 
 }
