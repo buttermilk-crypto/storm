@@ -61,7 +61,7 @@ public class StormApp {
 	FileDialog fileDialog;
 	Text inputFileText;
 	Text outputText;
-	Button pinToProfileButton;
+	Button threeDashButton;
 
 	AccountManager accountManager;
 	PropertiesManager propsManager;
@@ -367,23 +367,23 @@ public class StormApp {
 		settingsGroup.setText("Misc. Settings");
 		settingsGroup.setLayout(new GridLayout(8, false));
 
-		pinToProfileButton = new Button(settingsGroup, SWT.CHECK);
+		threeDashButton = new Button(settingsGroup, SWT.CHECK);
 
-		pinToProfileButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-		pinToProfileButton.setText("Pin to Profile");
+		threeDashButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		threeDashButton.setText("Use 3 Dash Separator");
 
-		String check = propsManager.getProperties().get("pin.to.profile.selected", "");
+		String check = propsManager.getProperties().get("threedash.selected", "");
 		if (Boolean.valueOf(check).booleanValue()) {
-			pinToProfileButton.setSelection(true);
+			threeDashButton.setSelection(true);
 		} else {
-			pinToProfileButton.setSelection(false);
+			threeDashButton.setSelection(false);
 		}
 
-		pinToProfileButton.addSelectionListener(new SelectionAdapter() {
+		threeDashButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				propsManager.getProperties().put("pin.to.profile.selected",
-						String.valueOf(pinToProfileButton.getSelection()));
+				propsManager.getProperties().put("threedash.selected",
+						String.valueOf(threeDashButton.getSelection()));
 			}
 		});
 
@@ -535,7 +535,7 @@ public class StormApp {
 					
 					if (frameFile.exists()) {
 
-						// load it
+						// load it - we're not revisiting the source file at all
 						frame = new StormFrame(inputFile, new ArrayList<StormEntry>());
 						frame.load();
 						
@@ -544,7 +544,13 @@ public class StormApp {
 						// no existing frame
 						// validate - this will cause program to exit if anything is invalid
 						String format = numberSchemeCombo.getText();
-						ArrayList<StormEntry> entries = TextUtil.prepareStormText(inputFile, outputText, format);
+						ArrayList<StormEntry> entries = null;
+						if(threeDashButton.getSelection()) {
+							entries = TextUtil.prepareDashText(inputFile, outputText, format);
+						}else {
+							entries = TextUtil.prepareStormText(inputFile, outputText, format);
+						}
+						
 						frame = new StormFrame(inputFile, entries);
 						// not saving yet
 					}
@@ -553,7 +559,7 @@ public class StormApp {
 					
 					if(senderThread == null) {
 						sender = new FrameSender(display, frame, accountManager, propsManager, outputText);
-						sender.setPinToProfile(pinToProfileButton.getSelection());
+						sender.setPinToProfile(threeDashButton.getSelection());
 						sender.configure();
 						senderThread = new Thread(sender);
 						senderThread.start();

@@ -160,8 +160,8 @@ public class FrameSender implements Runnable {
 				    sentAnything = true;
 				    try {
 				       if(kill) return;
- 				       msg("Sleeping now for 60 seconds...");
-					   Thread.sleep(60*1000);
+ 				       msg("Sleeping now for 30 seconds...");
+					   Thread.sleep(30*1000);
 				    } catch (InterruptedException e) {
 					 //   e.printStackTrace();
 				    }
@@ -239,8 +239,8 @@ public class FrameSender implements Runnable {
 				frame.save();
 				try {
 					if(kill) return;
-					msg("Sleeping now for 60 seconds...");
-					Thread.sleep(60 * 1000);
+					msg("Sleeping now for 30 seconds...");
+					Thread.sleep(30 * 1000);
 				} catch (InterruptedException e) {
 				//	e.printStackTrace();
 				}

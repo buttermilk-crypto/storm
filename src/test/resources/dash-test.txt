@@ -1,0 +1,8 @@
+So this is a dash test input
+and here is another line.
+---
+So here's more
+And more and more
+---
+And another. 
+
