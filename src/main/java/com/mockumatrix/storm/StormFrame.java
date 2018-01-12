@@ -5,6 +5,7 @@
 package com.mockumatrix.storm;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -57,7 +58,12 @@ public class StormFrame {
 		String name = inputFile.getName();
 		File frameFile = new File(baseFolder, name+".json");
 		if(!frameFile.exists()){
-			throw new RuntimeException("attempting to load frame, but file not found.");
+			try {
+				throw new RuntimeException(
+						"attempting to load frame, but file not found: "+frameFile.getCanonicalPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		// load the contents

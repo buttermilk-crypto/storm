@@ -38,6 +38,8 @@ public class FrameSender implements Runnable {
 	Twitter twitter;
 	
 	boolean kill;
+	
+	static final int delay = 45;
 
 	public FrameSender(Display display, StormFrame frame, AccountManager accountManager, PropertiesManager propsManager, Text outputText) {
 		super();
@@ -160,8 +162,8 @@ public class FrameSender implements Runnable {
 				    sentAnything = true;
 				    try {
 				       if(kill) return;
- 				       msg("Sleeping now for 30 seconds...");
-					   Thread.sleep(30*1000);
+ 				       msg("Sleeping now for "+delay+" seconds...");
+					   Thread.sleep(delay*1000);
 				    } catch (InterruptedException e) {
 					 //   e.printStackTrace();
 				    }
@@ -239,8 +241,8 @@ public class FrameSender implements Runnable {
 				frame.save();
 				try {
 					if(kill) return;
-					msg("Sleeping now for 30 seconds...");
-					Thread.sleep(30 * 1000);
+					   msg("Sleeping now for "+delay+" seconds...");
+					   Thread.sleep(delay*1000);
 				} catch (InterruptedException e) {
 				//	e.printStackTrace();
 				}
