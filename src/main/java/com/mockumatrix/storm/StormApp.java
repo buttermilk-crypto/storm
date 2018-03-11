@@ -69,7 +69,7 @@ public class StormApp {
 	// used to hold reference for disposal when program closes
 	final List<Image> imageList = new ArrayList<Image>();
 	
-	FrameSender sender;
+	FrameSender2 sender;
 	Thread senderThread;
 
 	public StormApp() {
@@ -558,7 +558,7 @@ public class StormApp {
 					accountManager.find(combo1.getText()); // side effect is to set currently selected account internally
 					
 					if(senderThread == null) {
-						sender = new FrameSender(display, frame, accountManager, propsManager, outputText);
+						sender = new FrameSender2(display, frame, accountManager, propsManager, outputText);
 						sender.setPinToProfile(threeDashButton.getSelection());
 						sender.configure();
 						senderThread = new Thread(sender);
